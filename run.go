@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
@@ -17,43 +18,49 @@ func main() {
 func setup(app *cli.App) {
 	app.Name = "conoha-iso"
 	app.Usage = "This app allow you to manage ISO images on ConoHa."
+	app.Version = "0.1"
 
 	flags := []cli.Flag{
 		cli.StringFlag{
-			Name:  "api-username, u",
-			Value: "",
-			Usage: "API Username",
+			Name:   "api-username, u",
+			Value:  "",
+			Usage:  "API Username",
+			EnvVar: "CONOHA_USERNAME",
 		},
 		cli.StringFlag{
-			Name:  "api-password, p",
-			Value: "",
-			Usage: "API Password",
+			Name:   "api-password, p",
+			Value:  "",
+			Usage:  "API Password",
+			EnvVar: "CONOHA_PASSWORD",
 		},
 		cli.StringFlag{
-			Name:  "api-tenant-id, t",
-			Value: "",
-			Usage: "API TenantId",
+			Name:   "api-tenant-id, t",
+			Value:  "",
+			Usage:  "API TenantId",
+			EnvVar: "CONOHA_TENANT_ID",
 		},
 		cli.StringFlag{
-			Name:  "region, r",
-			Value: "tyo1",
-			Usage: "Region name that ISO image will be uploaded.",
+			Name:   "region, r",
+			Value:  "",
+			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1.",
+			EnvVar: "CONOHA_REGION",
 		},
 	}
 
 	app.Commands = []cli.Command{
 		list(flags),
 		download(flags),
+		insert(flags),
+		eject(flags),
 	}
-
 }
 
 func list(flags []cli.Flag) cli.Command {
 	cmd := cli.Command{
-		Name:    "list",
-		Aliases: []string{"l"},
-		Usage:   "List ISO Images.",
-		Flags:   flags,
+		Name:  "list",
+		Usage: "List ISO Images.",
+		Flags: flags,
+
 		Action: func(c *cli.Context) {
 			ident, err := auth(c)
 			if err != nil {
@@ -83,23 +90,88 @@ func list(flags []cli.Flag) cli.Command {
 					println()
 				}
 			}
+			if len(isos.IsoImages) == 0 {
+				println("No ISO images.")
+			}
+		},
+	}
+	return cmd
+}
+
+func insert(flags []cli.Flag) cli.Command {
+	cmd := cli.Command{
+		Name:  "insert",
+		Usage: "Insert an ISO images to the VPS.",
+		Flags: flags,
+		Action: func(c *cli.Context) {
+			ident, err := auth(c)
+			if err != nil {
+				log.Errorf("%s", err)
+				return
+			}
+
+			var compute *command.Compute
+			compute = command.NewCompute()
+			compute.Identity = ident
+
+			err = compute.Insert()
+			if err != nil {
+				log.Errorf("%s", err)
+				return
+			}
+			log.Info("ISO file was inserted and changed boot device.")
+		},
+	}
+	return cmd
+}
+
+func eject(flags []cli.Flag) cli.Command {
+	cmd := cli.Command{
+		Name:  "eject",
+		Usage: "Eject an ISO image from the VPS.",
+		Flags: flags,
+		Action: func(c *cli.Context) {
+			ident, err := auth(c)
+			if err != nil {
+				log.Errorf("%s", err)
+				return
+			}
+
+			var compute *command.Compute
+			compute = command.NewCompute()
+			compute.Identity = ident
+
+			err = compute.Eject()
+			if err != nil {
+				log.Errorf("%s", err)
+				return
+			}
+			log.Info("ISO file was ejected.")
 		},
 	}
 	return cmd
 }
 
 func download(flags []cli.Flag) cli.Command {
-	cmd := cli.Command{
-		Name:    "download",
-		Aliases: []string{"l"},
-		Usage:   "Download ISO Image from the specific server.",
-		Flags:   flags,
-		Action: func(c *cli.Context) {
-			if len(c.Args()) == 0 {
-				return
-			}
 
-			url := c.Args()[0]
+	flags = append(flags, cli.StringFlag{
+		Name:  "url, i",
+		Value: "",
+		Usage: "ISO image url.",
+	})
+
+	cmd := cli.Command{
+		Name:  "download",
+		Usage: "Download ISO image from the FTP/HTTP server.",
+		Flags: flags,
+		Before: func(c *cli.Context) error {
+			if c.String("url") == "" {
+				log.Errorf("%s", "ISO image url required.")
+				return errors.New("ISO image url required.")
+			}
+			return nil
+		},
+		Action: func(c *cli.Context) {
 
 			ident, err := auth(c)
 			if err != nil {
@@ -110,6 +182,8 @@ func download(flags []cli.Flag) cli.Command {
 			var compute *command.Compute
 			compute = command.NewCompute()
 			compute.Identity = ident
+
+			url := c.String("url")
 
 			if err = compute.Download(url); err != nil {
 				log.Errorf("%s", err)
@@ -138,6 +212,10 @@ func auth(c *cli.Context) (*command.Identity, error) {
 		} else {
 			return nil, fmt.Errorf("Parameter \"%s\" is required.", name)
 		}
+	}
+
+	if c.String("region") == "" {
+		return nil, fmt.Errorf("Region shoud be required.")
 	}
 
 	switch c.String("region") {
