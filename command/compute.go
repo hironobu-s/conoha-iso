@@ -74,7 +74,10 @@ func (cmd *Compute) List() (*ISOImages, error) {
 	res, _ := ioutil.ReadAll(resp.Body)
 
 	var isos *ISOImages
-	json.Unmarshal(res, &isos)
+	if err = json.Unmarshal(res, &isos); err != nil {
+		return nil, err
+	}
+
 	return isos, nil
 }
 
