@@ -29,7 +29,7 @@ func (r *Region) Set(region string) error {
 	case SJC1:
 		r.Name = region
 	default:
-		return fmt.Errorf("Undefined region[%d].", region)
+		return fmt.Errorf("Undefined region[%s].", region)
 	}
 	return nil
 }
@@ -56,7 +56,7 @@ func (s *Service) Set(service string) error {
 		s.Name = COMPUTE
 		s.Version = "v2"
 	default:
-		return fmt.Errorf("Undefined service[%d].", service)
+		return fmt.Errorf("Undefined service[%s].", service)
 	}
 	return nil
 }
@@ -73,12 +73,17 @@ type Api struct {
 	lastRequestError error
 }
 
-func NewApi(service string, region string) *Api {
-	api := &Api{}
-	api.Service.Set(service)
-	api.Region.Set(region)
+func NewApi(service string, region string) (api *Api, err error) {
+	api = &Api{}
+	if err = api.Service.Set(service); err != nil {
+		return nil, err
+	}
 
-	return api
+	if err = api.Region.Set(region); err != nil {
+		return nil, err
+	}
+
+	return api, nil
 }
 
 func (api *Api) Endpoint(path []string) (*url.URL, error) {

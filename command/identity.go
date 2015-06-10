@@ -41,7 +41,11 @@ func (cmd *Identity) Auth() (err error) {
 		return err
 	}
 
-	api := NewApi("identity", cmd.Region)
+	api, err := NewApi("identity", cmd.Region)
+	if err != nil {
+		return err
+	}
+
 	if err = api.Prepare("POST", []string{"tokens"}, b); err != nil {
 		return err
 	}

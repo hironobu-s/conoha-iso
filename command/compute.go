@@ -40,12 +40,15 @@ func NewCompute(ident *Identity) *Compute {
 	return compute
 }
 
-func (cmd *Compute) newApi() *Api {
-	api := NewApi("compute", cmd.identity.Region)
+func (cmd *Compute) newApi() (api *Api, err error) {
+	api, err = NewApi("compute", cmd.identity.Region)
+	if err != nil {
+		return nil, err
+	}
 	api.Token = cmd.identity.Token
 	api.TenantId = cmd.identity.ApiTenantId
 
-	return api
+	return api, err
 }
 
 func (cmd *Compute) Insert() error {
@@ -70,7 +73,10 @@ func (cmd *Compute) Insert() error {
 		return err
 	}
 
-	api := cmd.newApi()
+	api, err := cmd.newApi()
+	if err != nil {
+		return err
+	}
 
 	if err = api.Prepare("POST", []string{"servers", server.Id, "action"}, b); err != nil {
 		return err
@@ -101,7 +107,10 @@ func (cmd *Compute) Eject() error {
 		return err
 	}
 
-	api := cmd.newApi()
+	api, err := cmd.newApi()
+	if err != nil {
+		return err
+	}
 
 	if err = api.Prepare("POST", []string{"servers", server.Id, "action"}, b); err != nil {
 		return err
@@ -118,7 +127,10 @@ func (cmd *Compute) Eject() error {
 }
 
 func (cmd *Compute) List() (isos *ISOImages, err error) {
-	api := cmd.newApi()
+	api, err := cmd.newApi()
+	if err != nil {
+		return nil, err
+	}
 
 	if err = api.Prepare("GET", []string{"iso-images"}, nil); err != nil {
 		return nil, err
@@ -152,7 +164,10 @@ func (cmd *Compute) Download(url string) error {
 		return err
 	}
 
-	api := cmd.newApi()
+	api, err := cmd.newApi()
+	if err != nil {
+		return err
+	}
 
 	if err = api.Prepare("POST", []string{"iso-images"}, b); err != nil {
 		return err
@@ -171,7 +186,10 @@ func (cmd *Compute) Download(url string) error {
 // -----------------------
 
 func (cmd *Compute) serverList() (servers *Servers, err error) {
-	api := cmd.newApi()
+	api, err := cmd.newApi()
+	if err != nil {
+		return nil, err
+	}
 
 	if err = api.Prepare("GET", []string{"servers"}, nil); err != nil {
 		return nil, err
