@@ -28,13 +28,13 @@ type ISOImages struct {
 	IsoImages []*ISOImage `json:"iso-images"`
 }
 
-type ServerId string
-
 type Servers struct {
-	Servers []struct {
-		Name string
-		Id   ServerId
-	}
+	Servers []*Server
+}
+
+type Server struct {
+	Id   string
+	Name string
 }
 
 func NewCompute() *Compute {
@@ -49,8 +49,8 @@ func NewCompute() *Compute {
 }
 
 func (cmd *Compute) Insert() error {
-	serverId := cmd.selectVps()
-	if serverId == "" {
+	server := cmd.selectVps()
+	if server == nil {
 		return fmt.Errorf("Can't detect the server")
 	}
 
@@ -77,7 +77,7 @@ func (cmd *Compute) Insert() error {
 
 	req, err := http.NewRequest(
 		"POST",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(serverId)+"/action",
+		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(server.Id)+"/action",
 		strings.NewReader(string(b)),
 	)
 
@@ -102,8 +102,8 @@ func (cmd *Compute) Insert() error {
 }
 
 func (cmd *Compute) Eject() error {
-	serverId := cmd.selectVps()
-	if serverId == "" {
+	server := cmd.selectVps()
+	if server == nil {
 		return fmt.Errorf("Can't detect the server")
 	}
 
@@ -123,7 +123,7 @@ func (cmd *Compute) Eject() error {
 
 	req, err := http.NewRequest(
 		"POST",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(serverId)+"/action",
+		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(server.Id)+"/action",
 		strings.NewReader(string(b)),
 	)
 
@@ -191,12 +191,12 @@ func (cmd *Compute) serverList() (*Servers, error) {
 	return servers, nil
 }
 
-func (cmd *Compute) selectVps() ServerId {
+func (cmd *Compute) selectVps() *Server {
 	servers, err := cmd.serverList()
 	if err != nil {
-		return ""
+		return nil
 	} else if len(servers.Servers) == 0 {
-		return ""
+		return nil
 	}
 
 	var i int
@@ -213,18 +213,18 @@ func (cmd *Compute) selectVps() ServerId {
 
 	var no string
 	if _, err = fmt.Scanf("%s", &no); err != nil {
-		return ""
+		return nil
 	}
 
 	i, err = strconv.Atoi(no)
 	if err != nil {
-		return ""
+		return nil
 
 	} else if 1 <= i && i <= len(servers.Servers) {
-		return servers.Servers[i-1].Id
+		return servers.Servers[i-1]
 
 	} else {
-		return ""
+		return nil
 	}
 }
 
