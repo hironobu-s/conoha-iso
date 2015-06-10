@@ -69,8 +69,7 @@ func list(flags []cli.Flag) cli.Command {
 			}
 
 			var compute *command.Compute
-			compute = command.NewCompute()
-			compute.Identity = ident
+			compute = command.NewCompute(ident)
 
 			isos, err := compute.List()
 			if err != nil {
@@ -111,8 +110,7 @@ func insert(flags []cli.Flag) cli.Command {
 			}
 
 			var compute *command.Compute
-			compute = command.NewCompute()
-			compute.Identity = ident
+			compute = command.NewCompute(ident)
 
 			err = compute.Insert()
 			if err != nil {
@@ -138,8 +136,7 @@ func eject(flags []cli.Flag) cli.Command {
 			}
 
 			var compute *command.Compute
-			compute = command.NewCompute()
-			compute.Identity = ident
+			compute = command.NewCompute(ident)
 
 			err = compute.Eject()
 			if err != nil {
@@ -157,17 +154,17 @@ func download(flags []cli.Flag) cli.Command {
 	flags = append(flags, cli.StringFlag{
 		Name:  "url, i",
 		Value: "",
-		Usage: "ISO image url.",
+		Usage: "ISO file url.",
 	})
 
 	cmd := cli.Command{
 		Name:  "download",
-		Usage: "Download ISO image from the FTP/HTTP server.",
+		Usage: "Download ISO file from the FTP/HTTP server.",
 		Flags: flags,
 		Before: func(c *cli.Context) error {
 			if c.String("url") == "" {
-				log.Errorf("%s", "ISO image url required.")
-				return errors.New("ISO image url required.")
+				log.Errorf("%s", "ISO file url required.")
+				return errors.New("ISO file url required.")
 			}
 			return nil
 		},
@@ -180,17 +177,14 @@ func download(flags []cli.Flag) cli.Command {
 			}
 
 			var compute *command.Compute
-			compute = command.NewCompute()
-			compute.Identity = ident
+			compute = command.NewCompute(ident)
 
-			url := c.String("url")
-
-			if err = compute.Download(url); err != nil {
+			if err = compute.Download(c.String("url")); err != nil {
 				log.Errorf("%s", err)
 				return
 			}
 
-			log.Info("A download request was accepted.")
+			log.Info("Download request was accepted.")
 		},
 	}
 	return cmd
@@ -216,17 +210,8 @@ func auth(c *cli.Context) (*command.Identity, error) {
 
 	if c.String("region") == "" {
 		return nil, fmt.Errorf("Region shoud be required.")
-	}
-
-	switch c.String("region") {
-	case "tyo1":
-		ident.Region = command.TYO1
-	case "sin1":
-		ident.Region = command.SIN1
-	case "sjc1":
-		ident.Region = command.SJC1
-	default:
-		return nil, fmt.Errorf("Undefined region \"%s\"", c.String("region"))
+	} else {
+		ident.Region = c.String("region")
 	}
 
 	if err := ident.Auth(); err != nil {

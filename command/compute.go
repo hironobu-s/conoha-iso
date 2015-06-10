@@ -3,16 +3,11 @@ package command
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strconv"
-	"strings"
 )
 
 type Compute struct {
-	Identity         *Identity
-	computeEndpoints map[int]string
-
+	identity *Identity
 	*Command
 }
 
@@ -37,15 +32,20 @@ type Server struct {
 	Name string
 }
 
-func NewCompute() *Compute {
-	compute := &Compute{}
-
-	compute.computeEndpoints = map[int]string{
-		TYO1: "https://compute.tyo1.conoha.io/v2/",
-		SIN1: "https://compute.sin1.conoha.io/v2/",
-		SJC1: "https://compute.sjc1.conoha.io/v2/",
+func NewCompute(ident *Identity) *Compute {
+	compute := &Compute{
+		identity: ident,
 	}
+
 	return compute
+}
+
+func (cmd *Compute) newApi() *Api {
+	api := NewApi("compute", cmd.identity.Region)
+	api.Token = cmd.identity.Token
+	api.TenantId = cmd.identity.ApiTenantId
+
+	return api
 }
 
 func (cmd *Compute) Insert() error {
@@ -70,32 +70,17 @@ func (cmd *Compute) Insert() error {
 		return err
 	}
 
-	endpoint, ok := cmd.computeEndpoints[cmd.Identity.Region]
-	if !ok {
-		return fmt.Errorf("Undefined region \"%s\"", cmd.Identity.Region)
-	}
+	api := cmd.newApi()
 
-	req, err := http.NewRequest(
-		"POST",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(server.Id)+"/action",
-		strings.NewReader(string(b)),
-	)
-
-	req.Header.Set("X-Auth-Token", cmd.Identity.Token)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-	if err != nil {
+	if err = api.Prepare("POST", []string{"servers", server.Id, "action"}, b); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
+	ch := api.Do()
+	_ = <-ch
+
+	if err = api.LastError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -116,75 +101,90 @@ func (cmd *Compute) Eject() error {
 		return err
 	}
 
-	endpoint, ok := cmd.computeEndpoints[cmd.Identity.Region]
-	if !ok {
-		return fmt.Errorf("Undefined region \"%s\"", cmd.Identity.Region)
-	}
+	api := cmd.newApi()
 
-	req, err := http.NewRequest(
-		"POST",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers/"+string(server.Id)+"/action",
-		strings.NewReader(string(b)),
-	)
-
-	req.Header.Set("X-Auth-Token", cmd.Identity.Token)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-	if err != nil {
+	if err = api.Prepare("POST", []string{"servers", server.Id, "action"}, b); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
+	ch := api.Do()
+	_ = <-ch
+
+	if err = api.LastError(); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (cmd *Compute) serverList() (*Servers, error) {
-	endpoint, ok := cmd.computeEndpoints[cmd.Identity.Region]
-	if !ok {
-		return nil, fmt.Errorf("Undefined region \"%s\"", cmd.Identity.Region)
-	}
+func (cmd *Compute) List() (isos *ISOImages, err error) {
+	api := cmd.newApi()
 
-	req, err := http.NewRequest(
-		"GET",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/servers",
-		nil,
-	)
-	if err != nil {
+	if err = api.Prepare("GET", []string{"iso-images"}, nil); err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("X-Auth-Token", cmd.Identity.Token)
+	ch := api.Do()
 
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-	if err != nil {
+	res := <-ch
+	if err = api.LastError(); err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return nil, fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
+	if err = json.Unmarshal(res, &isos); err != nil {
+		return nil, err
 	}
-	r, _ := ioutil.ReadAll(resp.Body)
 
-	// -------------
+	return isos, nil
+}
 
-	println(string(r))
+func (cmd *Compute) Download(url string) error {
+	var err error
 
-	var servers *Servers
-	if err = json.Unmarshal(r, &servers); err != nil {
+	reqjson := map[string]interface{}{
+		"iso-image": map[string]interface{}{
+			"url": url,
+		},
+	}
+
+	b, err := json.Marshal(reqjson)
+	if err != nil {
+		return err
+	}
+
+	api := cmd.newApi()
+
+	if err = api.Prepare("POST", []string{"iso-images"}, b); err != nil {
+		return err
+	}
+
+	ch := api.Do()
+
+	_ = <-ch
+	if err = api.LastError(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// -----------------------
+
+func (cmd *Compute) serverList() (servers *Servers, err error) {
+	api := cmd.newApi()
+
+	if err = api.Prepare("GET", []string{"servers"}, nil); err != nil {
+		return nil, err
+	}
+
+	ch := api.Do()
+	resp := <-ch
+
+	if err = api.LastError(); err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(resp, &servers); err != nil {
 		return nil, err
 	}
 
@@ -263,91 +263,4 @@ func (cmd *Compute) selectIso() *ISOImage {
 	} else {
 		return nil
 	}
-}
-
-func (cmd *Compute) List() (*ISOImages, error) {
-
-	endpoint, ok := cmd.computeEndpoints[cmd.Identity.Region]
-	if !ok {
-		return nil, fmt.Errorf("Undefined region \"%s\"", cmd.Identity.Region)
-	}
-
-	req, err := http.NewRequest(
-		"GET",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/iso-images",
-		nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("X-Auth-Token", cmd.Identity.Token)
-
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return nil, fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
-	}
-
-	res, _ := ioutil.ReadAll(resp.Body)
-
-	var isos *ISOImages
-	if err = json.Unmarshal(res, &isos); err != nil {
-		return nil, err
-	}
-
-	return isos, nil
-}
-
-func (cmd *Compute) Download(url string) error {
-	var err error
-
-	reqjson := map[string]interface{}{
-		"iso-image": map[string]interface{}{
-			"url": url,
-		},
-	}
-
-	b, err := json.Marshal(reqjson)
-	if err != nil {
-		return err
-	}
-
-	endpoint, ok := cmd.computeEndpoints[cmd.Identity.Region]
-	if !ok {
-		return fmt.Errorf("Undefined region \"%s\"", cmd.Identity.Region)
-	}
-
-	req, err := http.NewRequest(
-		"POST",
-		endpoint+"/"+cmd.Identity.ApiTenantId+"/iso-images",
-		strings.NewReader(string(b)),
-	)
-
-	req.Header.Set("X-Auth-Token", cmd.Identity.Token)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	client := &http.Client{}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
-	}
-
-	return nil
 }

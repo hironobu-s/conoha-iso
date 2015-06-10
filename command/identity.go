@@ -4,29 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 	"time"
-)
-
-// Regions
-const (
-	TYO1 = iota
-	SIN1
-	SJC1
 )
 
 type Identity struct {
 	ApiUsername string
 	ApiPassword string
 	ApiTenantId string
-	Region      int
 
 	Token        string
 	TokenExpires time.Time
-
-	identityEndpoints map[int]string
+	Region       string
 
 	*Command
 }
@@ -34,24 +22,10 @@ type Identity struct {
 func NewIdentity() *Identity {
 	identity := &Identity{}
 
-	identity.identityEndpoints = map[int]string{
-		TYO1: "https://identity.tyo1.conoha.io/v2.0",
-		SIN1: "https://identity.sin1.conoha.io/v2.0",
-		SJC1: "https://identity.sjc1.conoha.io/v2.0",
-	}
-
-	// identity.computeEndpoints = map[string]string{
-	// 	"tyo1": "https://compute.tyo1.conoha.io/v2/",
-	// 	"sin1": "https://compute.sin1.conoha.io/v2/",
-	// 	"sjc1": "https://compute.sjc1.conoha.io/v2/",
-	// }
 	return identity
 }
 
-// 認証を実行
-func (cmd *Identity) Auth() error {
-
-	// アカウント情報
+func (cmd *Identity) Auth() (err error) {
 	authinfo := map[string]interface{}{
 		"auth": map[string]interface{}{
 			"tenantId": cmd.ApiTenantId,
@@ -67,40 +41,15 @@ func (cmd *Identity) Auth() error {
 		return err
 	}
 
-	// 認証リクエスト
-	endpoint, ok := cmd.identityEndpoints[cmd.Region]
-	if !ok {
-		return fmt.Errorf("Undefined region \"%s\"", cmd.Region)
-	}
-
-	req, err := http.NewRequest(
-		"POST",
-		endpoint+"/tokens",
-		strings.NewReader(string(b)),
-	)
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if err != nil {
+	api := NewApi("identity", cmd.Region)
+	if err = api.Prepare("POST", []string{"tokens"}, b); err != nil {
 		return err
 	}
 
-	client := &http.Client{}
+	ch := api.Do()
+	strjson := <-ch
 
-	// httpリクエスト実行
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	switch {
-	case resp.StatusCode >= 400:
-		msg := cmd.extractApiErrorMessage(resp.Body)
-		return fmt.Errorf("Return %d status code from the server. [%s]", resp.StatusCode, msg)
-	}
-
-	strjson, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	if err = api.LastError(); err != nil {
 		return err
 	}
 
@@ -112,9 +61,7 @@ func (cmd *Identity) Auth() error {
 	return nil
 }
 
-// レスポンスのJSONをパースする
 func (cmd *Identity) parseResponse(strjson []byte) error {
-	// jsonパース
 	var auth map[string]interface{}
 	var ok bool
 	var err error
@@ -124,7 +71,6 @@ func (cmd *Identity) parseResponse(strjson []byte) error {
 		return err
 	}
 
-	// 認証失敗など
 	if _, ok = auth["error"]; ok {
 		obj := auth["error"].(map[string]interface{})
 		msg := fmt.Sprintf("%s(%0.0f): %s",
@@ -151,7 +97,6 @@ func (cmd *Identity) parseResponse(strjson []byte) error {
 	t := access["token"].(map[string]interface{})
 	token := t["id"].(string)
 
-	// トークンの有効期限を取得
 	tokenExpires, err := time.Parse(time.RFC3339, t["expires"].(string))
 	if err != nil {
 		return err
