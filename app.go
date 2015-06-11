@@ -9,6 +9,8 @@ import (
 )
 
 type ConoHaIso struct {
+	lastError error
+
 	*cli.App
 }
 
@@ -60,16 +62,20 @@ func (app *ConoHaIso) setup() {
 	}
 }
 
+func (app *ConoHaIso) afterAction(context *cli.Context) error {
+	return app.lastError
+}
+
 func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 	cmd := cli.Command{
 		Name:  "list",
 		Usage: "List ISO Images.",
 		Flags: flags,
-
+		After: app.afterAction,
 		Action: func(c *cli.Context) {
 			ident, err := app.auth(c)
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
@@ -78,7 +84,7 @@ func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 
 			isos, err := compute.List()
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
@@ -107,10 +113,11 @@ func (app *ConoHaIso) insert(flags []cli.Flag) cli.Command {
 		Name:  "insert",
 		Usage: "Insert an ISO images to the VPS.",
 		Flags: flags,
+		After: app.afterAction,
 		Action: func(c *cli.Context) {
 			ident, err := app.auth(c)
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
@@ -119,7 +126,7 @@ func (app *ConoHaIso) insert(flags []cli.Flag) cli.Command {
 
 			err = compute.Insert()
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 			log.Info("ISO file was inserted and changed boot device.")
@@ -133,10 +140,11 @@ func (app *ConoHaIso) eject(flags []cli.Flag) cli.Command {
 		Name:  "eject",
 		Usage: "Eject an ISO image from the VPS.",
 		Flags: flags,
+		After: app.afterAction,
 		Action: func(c *cli.Context) {
 			ident, err := app.auth(c)
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
@@ -145,7 +153,7 @@ func (app *ConoHaIso) eject(flags []cli.Flag) cli.Command {
 
 			err = compute.Eject()
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 			log.Info("ISO file was ejected.")
@@ -166,9 +174,9 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 		Name:  "download",
 		Usage: "Download ISO file from the FTP/HTTP server.",
 		Flags: flags,
+		After: app.afterAction,
 		Before: func(c *cli.Context) error {
 			if c.String("url") == "" {
-				log.Errorf("%s", "ISO file url required.")
 				return errors.New("ISO file url required.")
 			}
 			return nil
@@ -177,7 +185,7 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 
 			ident, err := app.auth(c)
 			if err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
@@ -185,7 +193,7 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 			compute = command.NewCompute(ident)
 
 			if err = compute.Download(c.String("url")); err != nil {
-				log.Errorf("%s", err)
+				app.lastError = err
 				return
 			}
 
