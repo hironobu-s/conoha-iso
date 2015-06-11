@@ -188,7 +188,7 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 		After: app.afterAction,
 		Before: func(c *cli.Context) error {
 			if c.String("url") == "" {
-				return errors.New("ISO file url required.")
+				return errors.New("ISO file url is required.")
 			}
 			return nil
 		},
