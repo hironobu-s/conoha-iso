@@ -6,6 +6,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/hironobu-s/conoha-iso/command"
+	"io/ioutil"
 )
 
 type ConoHaIso struct {
@@ -22,10 +23,21 @@ func NewConoHaIso() *ConoHaIso {
 	return app
 }
 
+func (app *ConoHaIso) version() string {
+	// os.Getwd()
+	version, err := ioutil.ReadFile("VERSION")
+	if err != nil {
+		return ""
+	} else {
+		println(version)
+		return string(version)
+	}
+}
+
 func (app *ConoHaIso) setup() {
 	app.Name = "conoha-iso"
 	app.Usage = "This app allow you to manage ISO images on ConoHa."
-	app.Version = "0.1"
+	app.Version = app.version()
 
 	flags := []cli.Flag{
 		cli.StringFlag{
