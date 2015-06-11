@@ -94,7 +94,11 @@ func (api *Api) Endpoint(path []string) (*url.URL, error) {
 		strurl = fmt.Sprintf("https://%s.%s.conoha.io/%s/%s/%s", api.Service.Name, api.Region.Name, api.Service.Version, api.TenantId, strings.Join(path, "/"))
 	}
 
-	return url.Parse(strurl)
+	if strings.HasSuffix(strurl, "/") {
+		return url.Parse(strurl[0 : len(strurl)-1])
+	} else {
+		return url.Parse(strurl)
+	}
 }
 
 func (api *Api) Prepare(method string, path []string, body []byte) error {
