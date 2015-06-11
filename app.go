@@ -29,7 +29,6 @@ func (app *ConoHaIso) version() string {
 	if err != nil {
 		return ""
 	} else {
-		println(version)
 		return string(version)
 	}
 }
