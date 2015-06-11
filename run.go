@@ -1,10 +1,13 @@
 package main
 
 import (
+	log "github.com/Sirupsen/logrus"
 	"os"
 )
 
 func main() {
 	app := NewConoHaIso()
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		log.Errorf(err.Error())
+	}
 }
