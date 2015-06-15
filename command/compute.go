@@ -61,7 +61,7 @@ func (cmd *Compute) Insert() error {
 
 	iso := cmd.selectIso()
 	if iso == nil {
-		return fmt.Errorf("Can't detect ISO Image ")
+		return fmt.Errorf("No ISO Images.")
 	}
 
 	reqjson := map[string]interface{}{
