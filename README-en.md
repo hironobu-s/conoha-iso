@@ -1,6 +1,6 @@
 # ConoHa ISO
 
-This is a simple tool that send the download request to APIs of [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. You can handle only ISO image via APIs in ConoHa. but you can handle it from CLI more easily.
+This is a simple tool that send the download request to APIs in [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. You can handle only ISO image via APIs in ConoHa. but you can handle it from CLI more easily.
 
 ## Install
 
@@ -25,11 +25,13 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 
 ## Introduction
 
-You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel. Region should be "tyo1", "sin1", or "sjc1".
+You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. Region should be "tyo1", "sin1", or "sjc1".
+
+These are on the ConoHa control-panel. 
 
 How to pass these, You can select the way via command-line arguments, or also environment variables.
 
-** Via command-line arguments **
+**Via command-line arguments**
 
 You can use -p, -t, -r options.
 
@@ -37,7 +39,7 @@ You can use -p, -t, -r options.
 ./conoha-iso list -u [API-Username] -p [API-Password] -t [Tenant-ID] -r [Region]
 ```
 
-** Via environment variables **
+**Via environment variables**
 
 Also you can use CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_ID and CONOHA_REGION. For bash script.
 
@@ -108,7 +110,7 @@ Please select VPS no. [1-2]: 1
 INFO[0001] ISO file was ejected.
 ```
 
-## Help option
+## Help
 
 All sub-command are accepted -h option to display the descriptions.
 
