@@ -1,5 +1,7 @@
 # ConoHa ISO
 
+[English version](README-en.md)
+
 [ConoHa](https://www.conoha.jp/)にISOイメージのダウンロードリクエストを送ったり、VPSへのISOイメージの挿入、排出などが行える簡易ツールです。ConoHaはAPI経由でしかISOイメージを扱えませんが、このツールを使うとコマンドラインから簡単に扱うことができます。
 
 ## インストール
