@@ -1,6 +1,6 @@
 # ConoHa ISO
 
-ConoHa ISO is a simple tool that sends the download request to ConoHa APIs. This also execute to insert or eject ISO image from VPS. You can handle only ISO image via APIs in ConoHa. but you can handle it from CLI more easily.
+This is a simple tool that send the download request to APIs of [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. You can handle only ISO image via APIs in ConoHa. but you can handle it from CLI more easily.
 
 ## Install
 
@@ -48,7 +48,7 @@ export CONOHA_TENANT_ID=[Tenant ID]
 export CONOHA_REGION=[Regiona]
 ```
 
-## How to use conoha-iso
+## How to use
 
 Sub-commands are provided for each function.
 
