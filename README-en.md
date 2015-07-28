@@ -112,7 +112,7 @@ INFO[0001] ISO file was ejected.
 
 ## Help
 
-All sub-command are accepted -h option to display the descriptions.
+All sub-command accept -h option to display the descriptions.
 
 ```bash
 ./conoha-iso -h
