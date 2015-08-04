@@ -1,6 +1,8 @@
 # ConoHa ISO
 
-This is a simple tool that send the download request to APIs in [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. You can handle only ISO image via APIs in ConoHa. but you can handle it from CLI more easily.
+This is a simple tool that send the download request to APIs in [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. 
+
+You can handle only ISO image via APIs in ConoHa, but you can handle it from CLI more easily.
 
 ## Install
 
@@ -25,15 +27,13 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 
 ## Introduction
 
-You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. Region should be "tyo1", "sin1", or "sjc1".
-
-These are on the ConoHa control-panel. 
+You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel and Region should be "tyo1", "sin1", or "sjc1".
 
 How to pass these, You can select the way via command-line arguments, or also environment variables.
 
 **Via command-line arguments**
 
-You can use -p, -t, -r options.
+You can use -u, -p, -t, -r options.
 
 ```bash
 ./conoha-iso list -u [API-Username] -p [API-Password] -t [Tenant-ID] -r [Region]
