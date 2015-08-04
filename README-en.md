@@ -47,7 +47,7 @@ Also you can use CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_ID and CONOHA_R
 export CONOHA_USERNAME=[API Username]
 export CONOHA_PASSWORD=[API Password]
 export CONOHA_TENANT_ID=[Tenant ID]
-export CONOHA_REGION=[Regiona]
+export CONOHA_REGION=[Region]
 ```
 
 ## How to use
