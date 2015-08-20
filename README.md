@@ -29,7 +29,7 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 
 conoha-isoを実行するには、APIへの認証情報とリージョンの指定が必須となります。
 
-API認証情報は「APIユーザ名」「APIパスワード」「テナントID」です。これらの情報は[ConoHaのコントロールパネル](https://manage.conoha.jp/API/)にあります。
+API認証情報は「APIユーザ名」「APIパスワード」「テナント名 or テナントID」です。これらの情報は[ConoHaのコントロールパネル](https://manage.conoha.jp/API/)にあります。
 
 リージョンはISOイメージを登録するリージョンで、tyo1, sin1, sjc1の3つです(順に東京、シンガポール、アメリカ)。
 
@@ -37,20 +37,26 @@ API認証情報は「APIユーザ名」「APIパスワード」「テナントID
 
 **コマンドライン引数で渡す**
 
-それぞれ-u -p -t -rオプションを使います。たとえばlistコマンドを実行する場合、以下のようになります。
+-u -p -n -t -rオプションを使います。テナント名とテナントIDは、どちらか一方を指定するだけで良いです。たとえばlistコマンドを実行する場合、以下のようになります。また、リージョンは指定しなかった場合、tyo1が使用されます。
 
+テナント名を指定
+```bash
+./conoha-iso list -u [APIユーザ名] -p [APIパスワード] -n [テナント名] -r [リージョン]
+```
+
+テナントIDを指定
 ```bash
 ./conoha-iso list -u [APIユーザ名] -p [APIパスワード] -t [テナントID] -r [リージョン]
 ```
 
 **環境変数で渡す**
 
-API認証情報は環境変数経由で渡すこともできます。変数名は CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_ID CONOHA_REGIONです。以下はbashの場合です。
+API認証情報は環境変数経由で渡すこともできます。変数名は CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_NAME, CONOHA_TENANT_ID, CONOHA_REGIONです。以下はbashの場合です。
 
 ```bash
 export CONOHA_USERNAME=[APIユーザ名]
 export CONOHA_PASSWORD=[APIパスワード]
-export CONOHA_TENANT_ID=[テナントID]
+export CONOHA_TENANT_NAME=[テナント名]
 export CONOHA_REGION=[リージョン]
 ```
 

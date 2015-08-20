@@ -33,8 +33,14 @@ How to pass these, You can select the way via command-line arguments, or also en
 
 **Via command-line arguments**
 
-You can use -u, -p, -t, -r options.
+You can use -u, -p, -n, -t, -r options to authenticate. Tenant-Name and Tenant-ID are specified either. if Region is not set, it will be used "tyo1".
 
+Use tenant name
+```bash
+./conoha-iso list -u [API-Username] -p [API-Password] -n [Tenant-Name] -r [Region]
+```
+
+Use tenant id
 ```bash
 ./conoha-iso list -u [API-Username] -p [API-Password] -t [Tenant-ID] -r [Region]
 ```
@@ -44,9 +50,9 @@ You can use -u, -p, -t, -r options.
 Also you can use CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_ID and CONOHA_REGION. For bash script.
 
 ```bash
-export CONOHA_USERNAME=[API Username]
-export CONOHA_PASSWORD=[API Password]
-export CONOHA_TENANT_ID=[Tenant ID]
+export CONOHA_USERNAME=[API-Username]
+export CONOHA_PASSWORD=[API-Password]
+export CONOHA_TENANT_NAME=[Tenant-Name]
 export CONOHA_REGION=[Region]
 ```
 
