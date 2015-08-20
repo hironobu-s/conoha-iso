@@ -58,6 +58,12 @@ func (app *ConoHaIso) setup() {
 			EnvVar: "CONOHA_TENANT_ID",
 		},
 		cli.StringFlag{
+			Name:   "api-tenant-name, n",
+			Value:  "",
+			Usage:  "API TenantName",
+			EnvVar: "CONOHA_TENANT_NAME",
+		},
+		cli.StringFlag{
 			Name:   "region, r",
 			Value:  "",
 			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1.",
@@ -219,9 +225,8 @@ func (app *ConoHaIso) auth(c *cli.Context) (*command.Identity, error) {
 	ident := command.NewIdentity()
 
 	requires := map[string]*string{
-		"api-username":  &ident.ApiUsername,
-		"api-password":  &ident.ApiPassword,
-		"api-tenant-id": &ident.ApiTenantId,
+		"api-username": &ident.ApiUsername,
+		"api-password": &ident.ApiPassword,
 	}
 
 	for name, v := range requires {
@@ -231,6 +236,14 @@ func (app *ConoHaIso) auth(c *cli.Context) (*command.Identity, error) {
 			return nil, fmt.Errorf("Parameter \"%s\" is required.", name)
 		}
 	}
+
+	// TenantIdとTenantNameはどちらか必須
+	if c.String("api-tenant-name") == "" && c.String("api-tenant-id") == "" {
+		return nil, fmt.Errorf("Ethier \"api-tenant-id\" or \"api-tenant-name\" is required.")
+	}
+
+	ident.ApiTenantName = c.String("api-tenant-name")
+	ident.ApiTenantId = c.String("api-tenant-id")
 
 	if c.String("region") == "" {
 		return nil, fmt.Errorf("Region shoud be required.")

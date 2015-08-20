@@ -8,9 +8,10 @@ import (
 )
 
 type Identity struct {
-	ApiUsername string
-	ApiPassword string
-	ApiTenantId string
+	ApiUsername   string
+	ApiPassword   string
+	ApiTenantId   string
+	ApiTenantName string
 
 	Token        string
 	TokenExpires time.Time
@@ -28,7 +29,8 @@ func NewIdentity() *Identity {
 func (cmd *Identity) Auth() (err error) {
 	authinfo := map[string]interface{}{
 		"auth": map[string]interface{}{
-			"tenantId": cmd.ApiTenantId,
+			"tenantName": cmd.ApiTenantName,
+			"tenantId":   cmd.ApiTenantId,
 			"passwordCredentials": map[string]interface{}{
 				"username": cmd.ApiUsername,
 				"password": cmd.ApiPassword,
@@ -108,5 +110,14 @@ func (cmd *Identity) parseResponse(strjson []byte) error {
 
 	cmd.Token = token
 	cmd.TokenExpires = tokenExpires
+
+	// TenantIdを取得
+	if _, ok = t["tenant"]; !ok {
+		err = errors.New("Undefined index: tenant")
+		return err
+	}
+	tenant := t["tenant"].(map[string]interface{})
+	cmd.ApiTenantId = tenant["id"].(string)
+
 	return nil
 }
