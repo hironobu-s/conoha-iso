@@ -66,7 +66,7 @@ func (app *ConoHaIso) setup() {
 		cli.StringFlag{
 			Name:   "region, r",
 			Value:  "",
-			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1.",
+			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1. If not set, it will be used tyo1.",
 			EnvVar: "CONOHA_REGION",
 		},
 	}
@@ -246,7 +246,7 @@ func (app *ConoHaIso) auth(c *cli.Context) (*command.Identity, error) {
 	ident.ApiTenantId = c.String("api-tenant-id")
 
 	if c.String("region") == "" {
-		return nil, fmt.Errorf("Region shoud be required.")
+		ident.Region = "tyo1"
 	} else {
 		ident.Region = c.String("region")
 	}
