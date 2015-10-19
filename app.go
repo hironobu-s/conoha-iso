@@ -3,10 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/hironobu-s/conoha-iso/command"
-	"io/ioutil"
 )
 
 type ConoHaIso struct {
@@ -43,25 +44,25 @@ func (app *ConoHaIso) setup() {
 			Name:   "api-username, u",
 			Value:  "",
 			Usage:  "API Username",
-			EnvVar: "CONOHA_USERNAME",
+			EnvVar: "OS_USERNAME,CONOHA_USERNAME",
 		},
 		cli.StringFlag{
 			Name:   "api-password, p",
 			Value:  "",
 			Usage:  "API Password",
-			EnvVar: "CONOHA_PASSWORD",
+			EnvVar: "OS_PASSWORD,CONOHA_PASSWORD",
 		},
 		cli.StringFlag{
 			Name:   "api-tenant-id, t",
 			Value:  "",
 			Usage:  "API TenantId",
-			EnvVar: "CONOHA_TENANT_ID",
+			EnvVar: "OS_TENANT_ID,CONOHA_TENANT_ID",
 		},
 		cli.StringFlag{
 			Name:   "api-tenant-name, n",
 			Value:  "",
 			Usage:  "API TenantName",
-			EnvVar: "CONOHA_TENANT_NAME",
+			EnvVar: "OS_TENANT_NAME,CONOHA_TENANT_NAME",
 		},
 		cli.StringFlag{
 			Name:   "region, r",

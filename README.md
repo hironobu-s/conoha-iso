@@ -51,14 +51,16 @@ API認証情報は「APIユーザ名」「APIパスワード」「テナント�
 
 **環境変数で渡す**
 
-API認証情報は環境変数経由で渡すこともできます。変数名は CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_NAME, CONOHA_TENANT_ID, CONOHA_REGIONです。以下はbashの場合です。
+API認証情報は環境変数経由で渡すこともできます。変数名は OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID, OS_REGIONです。以下はbashの場合です。[^1]
 
 ```bash
-export CONOHA_USERNAME=[APIユーザ名]
-export CONOHA_PASSWORD=[APIパスワード]
-export CONOHA_TENANT_NAME=[テナント名]
-export CONOHA_REGION=[リージョン]
+export OS_USERNAME=[APIユーザ名]
+export OS_PASSWORD=[APIパスワード]
+export OS_TENANT_NAME=[テナント名]
+export OS_REGION=[リージョン]
 ```
+
+[^1]: 互換性維持のためCONOHA_で始まる環境変数も使えます。
 
 ## 使い方
 
