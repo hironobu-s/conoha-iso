@@ -236,7 +236,7 @@ func (cmd *Compute) selectVps() (*Server, error) {
 	}
 
 	var no string
-	if _, err = fmt.Scanf("%s", &no); err != nil {
+	if _, err = fmt.Scanln(&no); err != nil {
 		return nil, err
 	}
 
@@ -273,7 +273,7 @@ func (cmd *Compute) selectIso() (*ISOImage, error) {
 	}
 
 	var no string
-	if _, err = fmt.Scanf("%s", &no); err != nil {
+	if _, err = fmt.Scanln(&no); err != nil {
 		return nil, err
 	}
 
