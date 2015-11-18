@@ -3,12 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/hironobu-s/conoha-iso/command"
 )
+
+var Version string
 
 type ConoHaIso struct {
 	lastError error
@@ -24,20 +25,10 @@ func NewConoHaIso() *ConoHaIso {
 	return app
 }
 
-func (app *ConoHaIso) version() string {
-	// os.Getwd()
-	version, err := ioutil.ReadFile("VERSION")
-	if err != nil {
-		return ""
-	} else {
-		return string(version)
-	}
-}
-
 func (app *ConoHaIso) setup() {
 	app.Name = "conoha-iso"
 	app.Usage = "This app allow you to manage ISO images on ConoHa."
-	app.Version = app.version()
+	app.Version = "0.2.1" // Version should be updated by hand at each release.
 
 	flags := []cli.Flag{
 		cli.StringFlag{

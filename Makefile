@@ -2,7 +2,6 @@ VERSION=$(shell cat VERSION)
 NAME=conoha-iso
 BINDIR=bin
 GOARCH=amd64
-GOFLAGS=-ldflags "-X github.com/hironobu-s/conoha-iso/lib.Version $(VERSION)"
 
 all: clean windows darwin linux
 
