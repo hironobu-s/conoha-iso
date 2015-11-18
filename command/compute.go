@@ -52,15 +52,19 @@ func (cmd *Compute) newApi() (api *Api, err error) {
 }
 
 func (cmd *Compute) Insert() error {
-	server := cmd.selectVps()
-	if server == nil {
+	server, err := cmd.selectVps()
+	if err != nil {
+		return err
+	} else if server == nil {
 		return fmt.Errorf("Can't detect the server")
 	}
 
 	println()
 
-	iso := cmd.selectIso()
-	if iso == nil {
+	iso, err := cmd.selectIso()
+	if err != nil {
+		return err
+	} else if iso == nil {
 		return fmt.Errorf("No ISO Images.")
 	}
 
@@ -92,9 +96,11 @@ func (cmd *Compute) Insert() error {
 	return nil
 }
 
-func (cmd *Compute) Eject() error {
-	server := cmd.selectVps()
-	if server == nil {
+func (cmd *Compute) Eject() (err error) {
+	server, err := cmd.selectVps()
+	if err != nil {
+		return err
+	} else if server == nil {
 		return fmt.Errorf("Can't detect the server")
 	}
 
@@ -209,12 +215,12 @@ func (cmd *Compute) serverList() (servers *Servers, err error) {
 	return servers, nil
 }
 
-func (cmd *Compute) selectVps() *Server {
+func (cmd *Compute) selectVps() (*Server, error) {
 	servers, err := cmd.serverList()
 	if err != nil {
-		return nil
+		return nil, err
 	} else if len(servers.Servers) == 0 {
-		return nil
+		return nil, fmt.Errorf("No servers found.")
 	}
 
 	var i int
@@ -231,27 +237,27 @@ func (cmd *Compute) selectVps() *Server {
 
 	var no string
 	if _, err = fmt.Scanf("%s", &no); err != nil {
-		return nil
+		return nil, err
 	}
 
 	i, err = strconv.Atoi(no)
 	if err != nil {
-		return nil
+		return nil, err
 
 	} else if 1 <= i && i <= len(servers.Servers) {
-		return servers.Servers[i-1]
+		return servers.Servers[i-1], nil
 
 	} else {
-		return nil
+		return nil, fmt.Errorf("Wrong VPS no.")
 	}
 }
 
-func (cmd *Compute) selectIso() *ISOImage {
+func (cmd *Compute) selectIso() (*ISOImage, error) {
 	isos, err := cmd.List()
 	if err != nil {
-		return nil
+		return nil, err
 	} else if len(isos.IsoImages) == 0 {
-		return nil
+		return nil, fmt.Errorf("No iso images found.")
 	}
 
 	var i int
@@ -268,17 +274,17 @@ func (cmd *Compute) selectIso() *ISOImage {
 
 	var no string
 	if _, err = fmt.Scanf("%s", &no); err != nil {
-		return nil
+		return nil, err
 	}
 
 	i, err = strconv.Atoi(no)
 	if err != nil {
-		return nil
+		return nil, err
 
 	} else if 1 <= i && i <= len(isos.IsoImages) {
-		return isos.IsoImages[i-1]
+		return isos.IsoImages[i-1], nil
 
 	} else {
-		return nil
+		return nil, fmt.Errorf("Wrong ISO no.")
 	}
 }
