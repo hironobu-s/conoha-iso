@@ -47,13 +47,13 @@ Use tenant id
 
 **Via environment variables**
 
-Also you can use CONOHA_USERNAME, CONOHA_PASSWORD, CONOHA_TENANT_ID and CONOHA_REGION. For bash script.
+Also you can use OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID and OS_REGION. For bash script.
 
 ```bash
-export CONOHA_USERNAME=[API-Username]
-export CONOHA_PASSWORD=[API-Password]
-export CONOHA_TENANT_NAME=[Tenant-Name]
-export CONOHA_REGION=[Region]
+export OS_USERNAME=[API-Username]
+export OS_PASSWORD=[API-Password]
+export OS_TENANT_NAME=[Tenant-Name]
+export OS_REGION=[Region]
 ```
 
 ## How to use
