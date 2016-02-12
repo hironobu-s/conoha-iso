@@ -28,8 +28,15 @@ type Servers struct {
 }
 
 type Server struct {
-	Id   string
-	Name string
+	Id       string
+	Name     string
+	Metadata struct {
+		InstanceNameTag string `json:"instance_name_tag"`
+	} `json:"metadata"`
+}
+
+func (s *Server) String() string {
+	return fmt.Sprintf("%s (%s)", s.Metadata.InstanceNameTag, s.Name)
 }
 
 func NewCompute(ident *Identity) *Compute {
@@ -197,7 +204,7 @@ func (cmd *Compute) serverList() (servers *Servers, err error) {
 		return nil, err
 	}
 
-	if err = api.Prepare("GET", []string{"servers"}, nil); err != nil {
+	if err = api.Prepare("GET", []string{"servers", "detail"}, nil); err != nil {
 		return nil, err
 	}
 
@@ -211,6 +218,8 @@ func (cmd *Compute) serverList() (servers *Servers, err error) {
 	if err = json.Unmarshal(resp, &servers); err != nil {
 		return nil, err
 	}
+	//pp.Printf("%v", string(resp))
+	//fmt.Fprint(os.Stdout, string(resp))
 
 	return servers, nil
 }
@@ -225,7 +234,7 @@ func (cmd *Compute) selectVps() (*Server, error) {
 
 	var i int
 	for i, vps := range servers.Servers {
-		fmt.Printf("[%d] %s\n", i+1, vps.Name)
+		fmt.Printf("[%d] %s\n", i+1, vps)
 		i++
 	}
 
