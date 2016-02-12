@@ -229,7 +229,7 @@ func (cmd *Compute) selectVps() (*Server, error) {
 	if err != nil {
 		return nil, err
 	} else if len(servers.Servers) == 0 {
-		return nil, fmt.Errorf("No servers found.")
+		return nil, fmt.Errorf("No VPS found.")
 	}
 
 	var i int
@@ -239,9 +239,9 @@ func (cmd *Compute) selectVps() (*Server, error) {
 	}
 
 	if len(servers.Servers) == 1 {
-		fmt.Printf("Please select VPS no. [1]: ")
+		fmt.Printf("Please select VPS [1]: ")
 	} else {
-		fmt.Printf("Please select VPS no. [1-%d]: ", len(servers.Servers))
+		fmt.Printf("Please select VPS [1-%d]: ", len(servers.Servers))
 	}
 
 	var no string
@@ -257,7 +257,7 @@ func (cmd *Compute) selectVps() (*Server, error) {
 		return servers.Servers[i-1], nil
 
 	} else {
-		return nil, fmt.Errorf("Wrong VPS no.")
+		return nil, fmt.Errorf("Wrong no.")
 	}
 }
 
@@ -276,9 +276,9 @@ func (cmd *Compute) selectIso() (*ISOImage, error) {
 	}
 
 	if len(isos.IsoImages) == 1 {
-		fmt.Printf("Please select ISO no. [1]: ")
+		fmt.Printf("Please select ISO [1]: ")
 	} else {
-		fmt.Printf("Please select ISO no. [1-%d]: ", len(isos.IsoImages))
+		fmt.Printf("Please select ISO [1-%d]: ", len(isos.IsoImages))
 	}
 
 	var no string
@@ -294,6 +294,6 @@ func (cmd *Compute) selectIso() (*ISOImage, error) {
 		return isos.IsoImages[i-1], nil
 
 	} else {
-		return nil, fmt.Errorf("Wrong ISO no.")
+		return nil, fmt.Errorf("Wrong no.")
 	}
 }
