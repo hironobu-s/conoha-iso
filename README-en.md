@@ -1,8 +1,6 @@
 # ConoHa ISO
 
-This is a simple tool that send the download request to APIs in [ConoHa](https://www.conoha.jp/). This also execute to insert or eject ISO image from VPS. 
-
-You can handle only ISO image via APIs in ConoHa, but you can handle it from CLI more easily.
+This is a simple tool that send the download request to the API in [ConoHa](https://www.conoha.jp/). You will able to handle the ISO image from the CLI more easily.
 
 ## Install
 
