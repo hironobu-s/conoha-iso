@@ -45,12 +45,13 @@ Use tenant id
 
 **Via environment variables**
 
-Also you can use OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID and OS_REGION. For bash script.
+Also you can use OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID, OS_AUTH_URL and OS_REGION. For bash script.
 
 ```bash
 export OS_USERNAME=[API-Username]
 export OS_PASSWORD=[API-Password]
 export OS_TENANT_NAME=[Tenant-Name]
+export OS_AUTH_URL=[Identity Endpoint]
 export OS_REGION=[Region]
 ```
 

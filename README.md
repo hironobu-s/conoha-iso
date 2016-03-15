@@ -51,12 +51,13 @@ API認証情報は「APIユーザ名」「APIパスワード」「テナント�
 
 **環境変数で渡す**
 
-API認証情報は環境変数経由で渡すこともできます。変数名は OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID, OS_REGIONです。以下はbashの場合です。[^1]
+API認証情報は環境変数経由で渡すこともできます。変数名は OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_AUTH_URL, OS_TENANT_ID, OS_REGIONです。以下はbashの場合です。[^1]
 
 ```bash
 export OS_USERNAME=[APIユーザ名]
 export OS_PASSWORD=[APIパスワード]
 export OS_TENANT_NAME=[テナント名]
+export OS_AUTH_URL=[Identity Endpoint]
 export OS_REGION=[リージョン]
 ```
 
