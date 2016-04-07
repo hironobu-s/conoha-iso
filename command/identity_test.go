@@ -1,11 +1,22 @@
 package command
 
 import (
+	"os"
 	"testing"
 )
 
-func doConnectToApi() bool {
-	if API_USERNAME != "" && API_PASSWORD != "" && API_TENANT_ID != "" {
+func setTestAuthentication(identity *Identity) bool {
+	identity.ApiUsername = os.Getenv("OS_USERNAME")
+	identity.ApiPassword = os.Getenv("OS_PASSWORD")
+	identity.ApiTenantId = os.Getenv("OS_TENANT_ID")
+	if identity.ApiTenantId == "" {
+		identity.ApiTenantName = os.Getenv("OS_TENANT_NAME")
+	}
+	identity.Region = os.Getenv("OS_REGION_NAME")
+
+	if identity.ApiUsername != "" &&
+		identity.ApiPassword != "" &&
+		(identity.ApiTenantId != "" || identity.ApiTenantName != "") {
 		return true
 	} else {
 		return false
@@ -20,15 +31,10 @@ func TestNewIdentity(t *testing.T) {
 }
 
 func TestAuthOk(t *testing.T) {
-	if !doConnectToApi() {
+	identity := NewIdentity()
+	if !setTestAuthentication(identity) {
 		t.Skip("Skip test that needs connect to API.")
 	}
-
-	identity := NewIdentity()
-	identity.ApiUsername = API_USERNAME
-	identity.ApiPassword = API_PASSWORD
-	identity.ApiTenantId = API_TENANT_ID
-	identity.Region = REGION
 
 	if err := identity.Auth(); err != nil {
 		t.Errorf(err.Error())
@@ -40,14 +46,14 @@ func TestAuthOk(t *testing.T) {
 }
 
 func TestAuthNoRegion(t *testing.T) {
-	if !doConnectToApi() {
+	identity := NewIdentity()
+
+	if !setTestAuthentication(identity) {
 		t.Skip("Skip test that needs connect to API.")
 	}
 
-	identity := NewIdentity()
-	identity.ApiUsername = API_USERNAME
-	identity.ApiPassword = API_PASSWORD
-	identity.ApiTenantId = API_TENANT_ID
+	// Region is null
+	identity.Region = ""
 
 	if err := identity.Auth(); err == nil {
 		t.Errorf("No region specified. Test should be error.")

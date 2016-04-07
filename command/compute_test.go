@@ -7,15 +7,11 @@ import (
 var identity *Identity
 
 func TestPrepare(t *testing.T) {
-	if !doConnectToApi() {
+	identity = NewIdentity()
+	if !setTestAuthentication(identity) {
+		identity = nil
 		t.Skip("Skip test that needs connect to API.")
 	}
-
-	identity = NewIdentity()
-	identity.ApiUsername = API_USERNAME
-	identity.ApiPassword = API_PASSWORD
-	identity.ApiTenantId = API_TENANT_ID
-	identity.Region = REGION
 
 	if err := identity.Auth(); err != nil {
 		t.Fatalf(err.Error())
@@ -35,7 +31,7 @@ func TestNewCompute(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	if !doConnectToApi() {
+	if identity == nil {
 		t.Skip("Skip test that needs connect to API.")
 	}
 
@@ -47,7 +43,7 @@ func TestList(t *testing.T) {
 }
 
 func TestDownload(t *testing.T) {
-	if !doConnectToApi() {
+	if identity == nil {
 		t.Skip("Skip test that needs connect to API.")
 	}
 
