@@ -1,3 +1,5 @@
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 # ConoHa ISO
 
 This is a simple tool that send the download request to the API in [ConoHa](https://www.conoha.jp/). You will able to handle the ISO image from the CLI more easily.

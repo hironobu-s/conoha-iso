@@ -1,3 +1,5 @@
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 # ConoHa ISO
 
 [English version](README-en.md)
@@ -143,4 +145,4 @@ INFO[0001] ISO file was ejected.
 
 ## ライセンス
 
-BSD License
+MIT
