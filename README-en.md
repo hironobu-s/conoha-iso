@@ -1,4 +1,4 @@
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)  [![Build Status](https://travis-ci.org/hironobu-s/conoha-iso.svg?branch=master)](https://travis-ci.org/hironobu-s/conoha-iso) [![codebeat badge](https://codebeat.co/badges/792c6579-ec06-4841-a6e2-d49df29c0640)](https://codebeat.co/projects/github-com-hironobu-s-conoha-iso)
 
 # ConoHa ISO
 
