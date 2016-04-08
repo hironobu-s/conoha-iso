@@ -1,4 +1,3 @@
-VERSION=$(shell cat VERSION)
 NAME=conoha-iso
 BINDIR=bin
 GOARCH=amd64
