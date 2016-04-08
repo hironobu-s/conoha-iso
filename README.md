@@ -27,6 +27,12 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 [ZIP file](https://github.com/hironobu-s/conoha-iso/releases/download/current/conoha-iso.amd64.zip)
 
 
+## Dockerで使う
+
+Dockerイメージを用意してあります。環境変数などを渡す必要があるので、添付のスクリプト[docker-conoha-iso.sh](https://github.com/hironobu-s/conoha-iso/blob/master/docker-conoha-iso.sh)を使うと簡単です。
+
+[hironobu/conoha-iso](https://hub.docker.com/r/hironobu/conoha-iso/)
+
 ## はじめに(認証情報とリージョンの指定)
 
 conoha-isoを実行するには、APIへの認証情報とリージョンの指定が必須となります。

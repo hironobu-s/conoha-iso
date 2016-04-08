@@ -25,6 +25,12 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 [ZIP file](https://github.com/hironobu-s/conoha-iso/releases/download/current/conoha-iso.amd64.zip)
 
 
+## Run in Docker
+
+You can also run in a container. [docker-conoha-iso.sh](https://github.com/hironobu-s/conoha-iso/blob/master/docker-conoha-iso.sh) may be useful.
+
+(See https://hub.docker.com/r/hironobu/conoha-iso/)
+
 ## Introduction
 
 You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel and Region should be "tyo1", "sin1", or "sjc1".
