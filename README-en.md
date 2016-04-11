@@ -133,4 +133,4 @@ All sub-command accept -h option to display the descriptions.
 
 ## License
 
-BSD License
+MIT
