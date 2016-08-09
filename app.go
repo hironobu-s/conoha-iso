@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/codegangsta/cli"
 	"github.com/hironobu-s/conoha-iso/command"
 	"github.com/hironobu-s/conoha-iso/webui"
+	"github.com/urfave/cli"
 )
 
 type ConoHaIso struct {
@@ -27,7 +27,7 @@ func NewConoHaIso() *ConoHaIso {
 func (app *ConoHaIso) setup() {
 	app.Name = "conoha-iso"
 	app.Usage = "This app allow you to manage ISO images on ConoHa."
-	app.Version = "0.2.3" // Version should be updated by hand at each release.
+	app.Version = "0.2.4" // Version should be updated by hand at each release.
 
 	flags := []cli.Flag{
 		cli.StringFlag{
@@ -104,11 +104,11 @@ func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 		Usage: "List ISO Images.",
 		Flags: flags,
 		After: app.afterAction,
-		Action: func(c *cli.Context) {
+		Action: func(c *cli.Context) error {
 			ident, err := app.auth(c)
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			var compute *command.Compute
@@ -117,7 +117,7 @@ func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 			isos, err := compute.Isos()
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			for i, iso := range isos.IsoImages {
@@ -135,6 +135,7 @@ func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 			if len(isos.IsoImages) == 0 {
 				println("No ISO images.")
 			}
+			return nil
 		},
 	}
 	return cmd
@@ -146,11 +147,11 @@ func (app *ConoHaIso) insert(flags []cli.Flag) cli.Command {
 		Usage: "Insert an ISO images to the VPS.",
 		Flags: flags,
 		After: app.afterAction,
-		Action: func(c *cli.Context) {
+		Action: func(c *cli.Context) error {
 			ident, err := app.auth(c)
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			var compute *command.Compute
@@ -159,9 +160,10 @@ func (app *ConoHaIso) insert(flags []cli.Flag) cli.Command {
 			err = compute.InsertIntractive()
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 			log.Info("ISO file was inserted and changed boot device.")
+			return nil
 		},
 	}
 	return cmd
@@ -173,11 +175,11 @@ func (app *ConoHaIso) eject(flags []cli.Flag) cli.Command {
 		Usage: "Eject an ISO image from the VPS.",
 		Flags: flags,
 		After: app.afterAction,
-		Action: func(c *cli.Context) {
+		Action: func(c *cli.Context) error {
 			ident, err := app.auth(c)
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			var compute *command.Compute
@@ -186,9 +188,10 @@ func (app *ConoHaIso) eject(flags []cli.Flag) cli.Command {
 			err = compute.Eject()
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 			log.Info("ISO file was ejected.")
+			return nil
 		},
 	}
 	return cmd
@@ -213,11 +216,11 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 			}
 			return nil
 		},
-		Action: func(c *cli.Context) {
+		Action: func(c *cli.Context) error {
 			ident, err := app.auth(c)
 			if err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			var compute *command.Compute
@@ -225,10 +228,11 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 
 			if err = compute.Download(c.String("url")); err != nil {
 				app.lastError = err
-				return
+				return nil
 			}
 
 			log.Info("Download request was accepted.")
+			return nil
 		},
 	}
 	return cmd
