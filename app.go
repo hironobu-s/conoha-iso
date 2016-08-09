@@ -26,7 +26,7 @@ func NewConoHaIso() *ConoHaIso {
 func (app *ConoHaIso) setup() {
 	app.Name = "conoha-iso"
 	app.Usage = "This app allow you to manage ISO images on ConoHa."
-	app.Version = "0.2.3" // Version should be updated by hand at each release.
+	app.Version = "0.2.4" // Version should be updated by hand at each release.
 
 	flags := []cli.Flag{
 		cli.StringFlag{
