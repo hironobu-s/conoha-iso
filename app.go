@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/hironobu-s/conoha-iso/command"
+	"github.com/hironobu-s/conoha-iso/webui"
 )
 
 type ConoHaIso struct {
@@ -66,11 +67,35 @@ func (app *ConoHaIso) setup() {
 		app.download(flags),
 		app.insert(flags),
 		app.eject(flags),
+		app.webui(flags),
 	}
 }
 
 func (app *ConoHaIso) afterAction(context *cli.Context) error {
 	return app.lastError
+}
+
+func (app *ConoHaIso) webui(flags []cli.Flag) cli.Command {
+	cmd := cli.Command{
+		Name:  "webui",
+		Usage: "Run webui server.",
+		Flags: flags,
+		After: app.afterAction,
+		Action: func(c *cli.Context) {
+			log.Info("Server runnning...")
+			ident, err := app.auth(c)
+			if err != nil {
+				app.lastError = err
+				return
+			}
+
+			if err = webui.RunServer(ident); err != nil {
+				app.lastError = err
+				return
+			}
+		},
+	}
+	return cmd
 }
 
 func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
@@ -89,7 +114,7 @@ func (app *ConoHaIso) list(flags []cli.Flag) cli.Command {
 			var compute *command.Compute
 			compute = command.NewCompute(ident)
 
-			isos, err := compute.List()
+			isos, err := compute.Isos()
 			if err != nil {
 				app.lastError = err
 				return
@@ -131,7 +156,7 @@ func (app *ConoHaIso) insert(flags []cli.Flag) cli.Command {
 			var compute *command.Compute
 			compute = command.NewCompute(ident)
 
-			err = compute.Insert()
+			err = compute.InsertIntractive()
 			if err != nil {
 				app.lastError = err
 				return
@@ -189,7 +214,6 @@ func (app *ConoHaIso) download(flags []cli.Flag) cli.Command {
 			return nil
 		},
 		Action: func(c *cli.Context) {
-
 			ident, err := app.auth(c)
 			if err != nil {
 				app.lastError = err

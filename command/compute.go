@@ -12,6 +12,7 @@ type Compute struct {
 }
 
 type ISOImage struct {
+	Id    string
 	Name  string
 	Url   string
 	Path  string
@@ -58,7 +59,7 @@ func (cmd *Compute) newApi() (api *Api, err error) {
 	return api, err
 }
 
-func (cmd *Compute) Insert() error {
+func (cmd *Compute) InsertIntractive() error {
 	server, err := cmd.selectVps()
 	if err != nil {
 		return err
@@ -75,6 +76,10 @@ func (cmd *Compute) Insert() error {
 		return fmt.Errorf("No ISO Images.")
 	}
 
+	return cmd.Insert(server, iso)
+}
+
+func (cmd *Compute) Insert(server *Server, iso *ISOImage) (err error) {
 	reqjson := map[string]interface{}{
 		"mountImage": iso.Path,
 	}
@@ -92,6 +97,8 @@ func (cmd *Compute) Insert() error {
 	if err = api.Prepare("POST", []string{"servers", server.Id, "action"}, b); err != nil {
 		return err
 	}
+	//rr := api.LastError()
+	//pp.Printf("%v", api)
 
 	ch := api.Do()
 	_ = <-ch
@@ -99,7 +106,6 @@ func (cmd *Compute) Insert() error {
 	if err = api.LastError(); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -139,7 +145,7 @@ func (cmd *Compute) Eject() (err error) {
 	return nil
 }
 
-func (cmd *Compute) List() (isos *ISOImages, err error) {
+func (cmd *Compute) Isos() (isos *ISOImages, err error) {
 	api, err := cmd.newApi()
 	if err != nil {
 		return nil, err
@@ -161,6 +167,21 @@ func (cmd *Compute) List() (isos *ISOImages, err error) {
 	}
 
 	return isos, nil
+}
+
+func (cmd *Compute) Iso(id string) (iso *ISOImage, err error) {
+	isos, err := cmd.Isos()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, iso := range isos.IsoImages {
+		if iso.Id == id {
+			return iso, nil
+		}
+	}
+
+	return nil, fmt.Errorf("ISO not found")
 }
 
 func (cmd *Compute) Download(url string) error {
@@ -196,9 +217,7 @@ func (cmd *Compute) Download(url string) error {
 	return nil
 }
 
-// -----------------------
-
-func (cmd *Compute) serverList() (servers *Servers, err error) {
+func (cmd *Compute) Servers() (servers *Servers, err error) {
 	api, err := cmd.newApi()
 	if err != nil {
 		return nil, err
@@ -224,8 +243,24 @@ func (cmd *Compute) serverList() (servers *Servers, err error) {
 	return servers, nil
 }
 
+func (cmd *Compute) Server(id string) (server *Server, err error) {
+	servers, err := cmd.Servers()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, server := range servers.Servers {
+		if server.Id == id {
+			return server, nil
+		}
+	}
+	return nil, fmt.Errorf("Server not found.[%s]", id)
+}
+
+// -----------------------
+
 func (cmd *Compute) selectVps() (*Server, error) {
-	servers, err := cmd.serverList()
+	servers, err := cmd.Servers()
 	if err != nil {
 		return nil, err
 	} else if len(servers.Servers) == 0 {
@@ -262,7 +297,7 @@ func (cmd *Compute) selectVps() (*Server, error) {
 }
 
 func (cmd *Compute) selectIso() (*ISOImage, error) {
-	isos, err := cmd.List()
+	isos, err := cmd.Isos()
 	if err != nil {
 		return nil, err
 	} else if len(isos.IsoImages) == 0 {

@@ -1,0 +1,51 @@
+{{define "top"}}
+
+{{if .alert}}
+<div class="flash-message">ALERT: <strong>{{.alert}}</strong></div>
+{{end}}
+
+{{if .notice}}
+<div class="flash-message">NOTICE: <strong>{{.notice}}</strong></div>
+{{end}}
+
+<form method="post" id="conoha-iso-form" action="download">
+  <div>
+    <h2>Download an ISO image from the HTTP/FTP server.</h2>
+    <p>
+      URL: <input type="text" name="download_url" value="" />
+      <input type="submit" name="" value="Download" />
+    </p>
+  </div>
+</form>
+
+<form method="post" id="conoha-iso-form" action="isos">
+  <div>
+    <h2>Insert / Eject selected ISO image to VPS</h2>
+    <h3>VPS List</h3>
+    <ul id="server-list" data-bind="foreach: servers">
+      <li>
+        <input name="server" type="radio"/ data-bind="attr: { id: uuid, value: uuid }" /><label data-bind="text: name, attr: { for: uuid }"></label>
+      </li>
+    </ul>
+
+    <input type="button" value="Reload" data-bind="click: $root.reloadServers" />
+  </div>
+
+  <div>
+    <h3>ISO Images</h3>
+    <ul id="iso-list" data-bind="foreach: isos">
+      <li>
+        <input type="radio" name="iso"  data-bind="attr: { id: name }" /><label data-bind="text: name, attr: { for: name }"></label>
+      </li>
+    </ul>
+
+    <input type="button" value="Reload" data-bind="click: $root.reloadIsos" />
+  </div>
+
+  <div>
+    <input type="submit" value="Insert" />
+    <input type="submit" value="Eject" />
+  </div>
+</form>
+
+{{end}}
