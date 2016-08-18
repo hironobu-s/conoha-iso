@@ -1,0 +1,102 @@
+
+H1 {
+    color: #12b8d7;
+}
+
+H2 {
+    color: #38D;
+    font-size: medium;
+    font-weight: bold;
+}
+
+INPUT:focus {
+    border-color: #00F;
+}
+
+.container {
+    border: 0;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.description {
+    color: #999;
+    font-size: smaller;
+}
+
+.info-message {
+    width: 100%;
+    color: #138723;
+    border: 1px solid #138723;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.info-message .glyphicon {
+    color: #666;
+    float: right;
+    font-size: medium;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.error {
+    color: #F03;
+    border: 1px solid #F03;
+}
+
+.col-md-4 {
+    width: 38%;
+    padding: 1em;
+    border: 1px solid #DDD;
+    margin-right: 1%;
+    border-radius: 3px;
+}
+
+.col-md-3 {
+    width: 30%;
+    padding: 1em;
+    border: 1px solid #DDD;
+    margin-right: 1%;
+    border-radius: 3px;
+}
+
+.col-md-3:last-child {
+    margin-right: 0;
+}
+
+.btn-conoha {
+    background-color: #12b8d7;
+    color: #FFF;
+    font-weight: bold;
+    border-radius: 0;
+}
+
+.btn-conoha:hover {
+    background-color: #0988a7;
+    color: #FFF;
+    font-weight: bold;
+}
+
+H3 {
+    font-size: medium;
+}
+
+LABEL {
+    font-weight: normal;
+}
+
+A.reload {
+    font-size: smaller;
+}
+
+UL {
+}
+
+LABEL[disabled] {
+    opacity: 0.2;
+}

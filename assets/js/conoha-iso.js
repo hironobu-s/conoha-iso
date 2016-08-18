@@ -1,48 +1,59 @@
 'use strict';
 
-var Server = function(uuid,name) {
-    this.uuid = uuid;
+var Server = function(id,name) {
+    this.id = id;
     this.name = name;
 };
 
-var Iso = function(name) {
+var Iso = function(id,name) {
+    this.id = id;
     this.name = name;
 };
-
 
 var viewModel = {
     servers: ko.observableArray(),
     isos: ko.observableArray(),
+    nowReloading: ko.observable(false),
+
+    closeNotice: function() {
+	document.getElementById("notice").style.display = "none";
+    },
 
     reloadServers: function() {
 	self = this;
-	self.servers.removeAll();
+	self.nowReloading(true);
 
 	window.superagent
 	    .get("/servers")
 	    .send()
 	    .set("Accept: application/json")
 	    .end(function(err, res) {
+		self.servers.removeAll();
+
 		var ss = res.body.Servers;
 		for(var i = 0; i < ss.length; i++) {
-		    self.servers.push(new Server(ss[i].Id, ss[i].Name));
+		    self.servers.push(new Server(ss[i].Id, ss[i].metadata.instance_name_tag));
 		}
+		self.nowReloading(false);
 	    });
     },
 
     reloadIsos: function() {
 	self = this;
-	self.isos.removeAll();
+	self.nowReloading(true);
 
 	window.superagent
 	    .get("/isos")
 	    .send()
 	    .set("Accept: application/json")
 	    .end(function(err, res) {
+		self.isos.removeAll();
+
 		var ss = res.body["iso-images"];
 		for(var i = 0; i < ss.length; i++) {
-		    self.isos.push(new Iso(ss[i].Name));
+		    self.isos.push(new Iso(ss[i].Id, ss[i].Name));
 		}
+		self.nowReloading(false);
 	    });
     }
 };

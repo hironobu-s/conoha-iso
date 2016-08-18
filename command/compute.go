@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/satori/go.uuid"
 )
 
 type Compute struct {
@@ -109,7 +111,7 @@ func (cmd *Compute) Insert(server *Server, iso *ISOImage) (err error) {
 	return nil
 }
 
-func (cmd *Compute) Eject() (err error) {
+func (cmd *Compute) EjectIntractive() (err error) {
 	server, err := cmd.selectVps()
 	if err != nil {
 		return err
@@ -117,6 +119,10 @@ func (cmd *Compute) Eject() (err error) {
 		return fmt.Errorf("Can't detect the server")
 	}
 
+	return cmd.Eject(server)
+}
+
+func (cmd *Compute) Eject(server *Server) (err error) {
 	reqjson := map[string]interface{}{
 		"unmountImage": "",
 	}
@@ -166,6 +172,11 @@ func (cmd *Compute) Isos() (isos *ISOImages, err error) {
 		return nil, err
 	}
 
+	for _, iso := range isos.IsoImages {
+		// API response does not contain UUID. so that we generate it ourself.
+		iso.Id = uuid.NewV5(uuid.UUID{}, iso.Url).String()
+	}
+
 	return isos, nil
 }
 
@@ -181,7 +192,7 @@ func (cmd *Compute) Iso(id string) (iso *ISOImage, err error) {
 		}
 	}
 
-	return nil, fmt.Errorf("ISO not found")
+	return nil, fmt.Errorf("ISO image not found.[id=%s]", id)
 }
 
 func (cmd *Compute) Download(url string) error {
@@ -237,8 +248,6 @@ func (cmd *Compute) Servers() (servers *Servers, err error) {
 	if err = json.Unmarshal(resp, &servers); err != nil {
 		return nil, err
 	}
-	//pp.Printf("%v", string(resp))
-	//fmt.Fprint(os.Stdout, string(resp))
 
 	return servers, nil
 }
@@ -254,7 +263,7 @@ func (cmd *Compute) Server(id string) (server *Server, err error) {
 			return server, nil
 		}
 	}
-	return nil, fmt.Errorf("Server not found.[%s]", id)
+	return nil, fmt.Errorf("Server not found.[id=%s]", id)
 }
 
 // -----------------------

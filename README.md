@@ -4,7 +4,7 @@
 
 [English is here](README-en.md)
 
-[ConoHa](https://www.conoha.jp/)にISOイメージのダウンロードリクエストを送ったり、VPSへのISOイメージの挿入、排出などが行える簡易ツールです。ConoHaはAPI経由でしかISOイメージを扱えませんが、このツールを使うとコマンドラインから簡単に扱うことができます。
+[ConoHa](https://www.conoha.jp/)にISOイメージのダウンロードリクエストを送ったり、VPSへのISOイメージの挿入、排出などが行える簡易ツールです。ConoHaはAPI経由でしかISOイメージを扱えませんが、このツールを使うとコマンドライン/Webブラウザから簡単に扱うことができます。
 
 ## インストール
 
@@ -140,6 +140,24 @@ VPSを選択するメニューが表示されるので、番号で選択して�
 Please select VPS no. [1-2]: 1
 INFO[0001] ISO file was ejected.
 ```
+
+### webui
+
+WebブラウザからISOイメージの操作が行える管理コンソールを起動します。実行するとURLが表示されるので、Webブラウザを開き、アクセスしてください。デフォルトのURLはhttp://127.0.0.1:6543/です。
+
+```
+$ ./conoha-iso server
+Running on http://127.0.0.1:6543/
+```
+
+**-l** オプションでWebサーバが利用するアドレスとポート番号を指定することができます。
+
+```
+$ ./conoha-iso server -l 0.0.0.0:10000
+Running on http://0.0.0.0:10000/
+```
+
+![conoha-iso-webui.png](conoha-iso-webui.png)
 
 ### ヘルプ
 

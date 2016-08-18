@@ -10,6 +10,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+const (
+	APP_VERSION            = "0.3"
+	DEFAULT_LISTEN_ADDRESS = "127.0.0.1:6543"
+)
+
 type ConoHaIso struct {
 	lastError error
 
@@ -26,8 +31,8 @@ func NewConoHaIso() *ConoHaIso {
 
 func (app *ConoHaIso) setup() {
 	app.Name = "conoha-iso"
-	app.Usage = "This app allow you to manage ISO images on ConoHa."
-	app.Version = "0.2.4" // Version should be updated by hand at each release.
+	app.Usage = "This app allow you to manage the ISO images on ConoHa."
+	app.Version = APP_VERSION // Version should be updated by hand at each release.
 
 	flags := []cli.Flag{
 		cli.StringFlag{
@@ -56,8 +61,8 @@ func (app *ConoHaIso) setup() {
 		},
 		cli.StringFlag{
 			Name:   "region, r",
-			Value:  "",
-			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1. If not set, it will be used tyo1.",
+			Value:  "tyo1",
+			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1.",
 			EnvVar: "CONOHA_REGION",
 		},
 	}
@@ -67,7 +72,7 @@ func (app *ConoHaIso) setup() {
 		app.download(flags),
 		app.insert(flags),
 		app.eject(flags),
-		app.webui(flags),
+		app.server(flags),
 	}
 }
 
@@ -75,24 +80,28 @@ func (app *ConoHaIso) afterAction(context *cli.Context) error {
 	return app.lastError
 }
 
-func (app *ConoHaIso) webui(flags []cli.Flag) cli.Command {
+func (app *ConoHaIso) server(flags []cli.Flag) cli.Command {
+	flags = append(flags, cli.StringFlag{
+		Name:  "listen,l",
+		Value: DEFAULT_LISTEN_ADDRESS,
+		Usage: "Listen address, of the form <host:port>",
+	})
+
 	cmd := cli.Command{
-		Name:  "webui",
-		Usage: "Run webui server.",
+		Name:  "server",
+		Usage: "Run the server.",
 		Flags: flags,
 		After: app.afterAction,
-		Action: func(c *cli.Context) {
-			log.Info("Server runnning...")
+		Action: func(c *cli.Context) error {
 			ident, err := app.auth(c)
 			if err != nil {
-				app.lastError = err
-				return
+				return err
 			}
 
-			if err = webui.RunServer(ident); err != nil {
-				app.lastError = err
-				return
+			if err = webui.RunServer(c.String("listen"), ident); err != nil {
+				return err
 			}
+			return nil
 		},
 	}
 	return cmd
@@ -185,7 +194,7 @@ func (app *ConoHaIso) eject(flags []cli.Flag) cli.Command {
 			var compute *command.Compute
 			compute = command.NewCompute(ident)
 
-			err = compute.Eject()
+			err = compute.EjectIntractive()
 			if err != nil {
 				app.lastError = err
 				return nil

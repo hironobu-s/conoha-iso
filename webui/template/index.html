@@ -1,0 +1,89 @@
+{{define "index"}}
+
+{{if .Error}}
+<p id="notice" class="info-message error">
+  <a class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-bind="click: closeNotice"></a>
+  ERROR: <strong>{{.Error}}</strong>
+</p>
+{{end}}
+
+{{if .Notice}}
+<p id="notice" class="info-message">
+  <a class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-bind="click: closeNotice"></a>
+  {{.Notice}}
+</p>
+{{end}}
+
+<div class="col-md-4 clearfix">
+  <form method="post" action="download" class="form-group">
+    <h2>DOWNLOAD</h2>
+    <p class="description">Download an ISO image from HTTP/FTP servers.</p>
+    <p>
+      <input type="text" name="download_url" value="{{.DownloadUrl}}" class="form-control" placeholder="" required />
+    </p>
+    <p>
+      <button type="submit" class="btn btn-conoha" name="">Download</button>
+    </p>
+  </form>
+</div>
+
+<div class="col-md-3">
+  <form method="post" action="insert" class="form-group">
+    <h2>INSERT</h2>
+    <p class="description">Insert an ISO image into your VPS</p>
+
+    <h3>
+      VPS
+    </h3>
+    <ul class="list-unstyled" data-bind="foreach: servers">
+      <li>
+        <input name="server" type="radio" data-bind="attr: { id: 'insert-'+id, value: id }, disable: $root.nowReloading {{.CheckedServer}}" required />
+        <label data-bind="text: name, attr: { for: 'insert-'+id }"></label>
+      </li>
+    </ul>
+    <p>
+      <a class="reload" data-bind="click: $root.reloadServers, disable: nowReloading">[Reload]</a>
+    </p>
+
+    <h3>ISO Images</h3>
+    <ul class="list-unstyled" data-bind="foreach: isos">
+      <li>
+        <input type="radio" name="iso" data-bind="attr: { id: id, value: id }, disable: $root.nowReloading {{.CheckedIso}}" required/>
+        <label data-bind="text: name, attr: { for: id }, checked: $root.selectedIsos"></label>
+      </li>
+    </ul>
+
+    <p>
+      <a class="reload" data-bind="click: $root.reloadIsos, disable: nowReloading">[Reload]</a>
+    </p>
+
+    <div class="action-buttons">
+      <button type="submit" name="action" class="btn btn-block btn-conoha" value="insert">Insert</button>
+    </div>
+  </form>
+</div>
+
+<div class="col-md-3">
+  <form method="post" action="eject" class="form-group">
+    <h2>EJECT</h2>
+    <p class="description">Eject an ISO image from your VPS.</p>
+
+    <h3>VPS</h3>
+    <ul class="list-unstyled" data-bind="foreach: servers">
+      <li>
+        <input name="server" type="radio" data-bind="attr: { id: 'eject-'+id, value: id }, disable: $root.nowReloading {{.CheckedServer}}" required />
+        <label data-bind="text: name, attr: { for: 'eject-'+id }"></label>
+      </li>
+    </ul>
+
+    <p>
+      <a class="reload" data-bind="click: $root.reloadIsos, disable: nowReloading">[Reload]</a>
+    </p>
+
+    <div class="action-buttons">
+      <button type="submit" name="action" class="btn btn-block btn-conoha" value="eject">Eject</button>
+    </div>
+  </form>
+</div>
+
+{{end}}
