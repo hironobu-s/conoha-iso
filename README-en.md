@@ -2,11 +2,11 @@
 
 # ConoHa ISO
 
-This is a simple tool that send the download request to the API in [ConoHa](https://www.conoha.jp/). You will able to handle the ISO image from the CLI more easily.
+*ConoHa ISO* is a simple tool for managing the ISO images on [ConoHa API](https://www.conoha.jp/).
 
 ## Install
 
-Please download the executable files by the following.
+Please download the executable files as follows.
 
 **Mac OSX**
 
@@ -27,19 +27,17 @@ curl -sL https://github.com/hironobu-s/conoha-iso/releases/download/current/cono
 
 ## Run in Docker
 
-You can also run in a container. [docker-conoha-iso.sh](https://github.com/hironobu-s/conoha-iso/blob/master/docker-conoha-iso.sh) may be useful.
+You can also run conoha-iso in Docker. Using [docker-conoha-iso.sh](https://github.com/hironobu-s/conoha-iso/blob/master/docker-conoha-iso.sh) script may be useful.
 
 (See https://hub.docker.com/r/hironobu/conoha-iso/)
 
 ## Introduction
 
-You need the authentication information such as API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel and Region should be "tyo1", "sin1", or "sjc1".
-
-How to pass these, You can select the way via command-line arguments, or also environment variables.
+You need to provide some authentication informations, which are API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel. The region should be "tyo1", "sin1", or "sjc1".
 
 **Via command-line arguments**
 
-You can use -u, -p, -n, -t, -r options to authenticate. Tenant-Name and Tenant-ID are specified either. if Region is not set, it will be used "tyo1".
+Use -u, -p, -n, -t, -r options to authenticate. Tenant-Name and Tenant-ID are specified either. if Region is not set, it will be used "tyo1".
 
 Use tenant name
 ```bash
@@ -53,7 +51,9 @@ Use tenant id
 
 **Via environment variables**
 
-Also you can use OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID, OS_AUTH_URL and OS_REGION. For bash script.
+Use environment variables, like OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_TENANT_ID, OS_AUTH_URL and OS_REGION.
+
+In bash/sh
 
 ```bash
 export OS_USERNAME=[API-Username]
@@ -65,11 +65,11 @@ export OS_REGION=[Region]
 
 ## How to use
 
-Sub-commands are provided for each function.
+conoha-iso has several sub-commands.
 
 ### list
 
-Get ISO image list. You may run it after download sub-command.
+Display ISO images. 
 
 ```bash
 ./conoha-iso download -i http://stable.release.core-os.net/amd64-usr/current/coreos_production_iso_image.iso
@@ -96,7 +96,7 @@ Size:  178257920
 
 ### insert
 
-Insert an ISO image to your VPS. If you run it, The menu will be displayed to select ISO image.
+Insert an ISO image to your VPS. If you run it, The menu for selecting ISO image and VPS will be displayed.
 
 ```
 # ./conoha-iso insert
@@ -123,9 +123,27 @@ Please select VPS no. [1-2]: 1
 INFO[0001] ISO file was ejected.
 ```
 
+### server
+
+Launch web console to manage ISO image and VPS. You may run the web browser and aceess the URL displayed.
+
+```
+$ ./conoha-iso server
+Running on http://127.0.0.1:6543/
+```
+
+It can specify servers's listen-address and listen-port by using **-l** option, 
+
+```
+$ ./conoha-iso server -l 0.0.0.0:10000
+Running on http://0.0.0.0:10000/
+```
+
+![conoha-iso-webui.png](conoha-iso-webui.png)
+
 ## Help
 
-All sub-command accept -h option to display the descriptions.
+All sub-commands accept -h option for displaying the descriptions.
 
 ```bash
 ./conoha-iso -h
