@@ -128,8 +128,6 @@ INFO[0039] ISO file was inserted and changed boot device.
 
 ### eject
 
- (☝ ՞ਊ ՞)☝ｳｲｰﾝ
-
 VPSからISOイメージを排出します。
 VPSを選択するメニューが表示されるので、番号で選択してください。
 
@@ -143,7 +141,7 @@ INFO[0001] ISO file was ejected.
 
 ### server
 
-WebブラウザからISOイメージの操作が行える管理コンソールを起動します。実行するとURLが表示されるので、Webブラウザを開き、アクセスしてください。デフォルトのURLはhttp://127.0.0.1:6543/です。
+WebブラウザからISOイメージの操作が行える管理コンソールを起動します。実行するとURLが表示されるので、Webブラウザを開き、アクセスしてください。デフォルトのURLは http://127.0.0.1:6543/ です。
 
 ```
 $ ./conoha-iso server
