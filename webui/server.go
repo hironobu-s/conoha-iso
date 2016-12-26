@@ -13,7 +13,6 @@ import (
 
 	"github.com/hironobu-s/conoha-iso/command"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -30,7 +29,7 @@ func RunServer(address string, ident *command.Identity) (err error) {
 
 	// initialize web framework
 	e := echo.New()
-	e.SetRenderer(tpl)
+	e.Renderer = tpl
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -59,8 +58,8 @@ func RunServer(address string, ident *command.Identity) (err error) {
 		return fmt.Errorf("Invalid listen address[%s].", address)
 	}
 
-	e.Logger().Printf("Running on http://%s/", address)
-	e.Run(standard.New(address))
+	e.Logger.Printf("Running on http://%s/", address)
+	e.Logger.Fatal(e.Start(address))
 	return nil
 }
 
@@ -292,21 +291,21 @@ func popNotice(c echo.Context) string {
 }
 
 func setFlash(c echo.Context, name string, message string) {
-	cookie := &echo.Cookie{}
-	cookie.SetName(name)
-	cookie.SetValue(message)
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = message
 	c.SetCookie(cookie)
 }
 
 func popFlash(c echo.Context, name string) (value string) {
 	cc, err := c.Cookie(name)
 	if err == nil {
-		value = cc.Value()
+		value = cc.Value
 
 		// remove flash cookie
-		cookie := &echo.Cookie{}
-		cookie.SetName(name)
-		cookie.SetExpires(time.Now().Add(-1 * (100 * time.Second)))
+		cookie := new(http.Cookie)
+		cookie.Name = name
+		cookie.Expires = time.Now().Add(-1 * (100 * time.Second))
 		c.SetCookie(cookie)
 	}
 
