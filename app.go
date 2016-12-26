@@ -63,7 +63,7 @@ func (app *ConoHaIso) setup() {
 			Name:   "region, r",
 			Value:  "tyo1",
 			Usage:  "Region name that ISO image will be uploaded. Allowed values are tyo1, sin1 or sjc1.",
-			EnvVar: "CONOHA_REGION",
+			EnvVar: "OS_REGION,CONOHA_REGION",
 		},
 	}
 
