@@ -66,7 +66,7 @@ export OS_USERNAME=[APIユーザ名]
 export OS_PASSWORD=[APIパスワード]
 export OS_TENANT_NAME=[テナント名]
 export OS_AUTH_URL=[Identity Endpoint]
-export OS_REGION=[リージョン]
+export OS_REGION_NAME=[リージョン]
 ```
 
 [^1]: 互換性維持のためCONOHA_で始まる環境変数も使えます。

@@ -60,7 +60,7 @@ export OS_USERNAME=[API-Username]
 export OS_PASSWORD=[API-Password]
 export OS_TENANT_NAME=[Tenant-Name]
 export OS_AUTH_URL=[Identity Endpoint]
-export OS_REGION=[Region]
+export OS_REGION_NAME=[Region]
 ```
 
 ## How to use
