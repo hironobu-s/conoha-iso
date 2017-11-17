@@ -4,7 +4,6 @@ go:
 
 before_install:
   - go get github.com/hironobu-s/conoha-iso/...
-  - go generate
 
 script:
   - make test
