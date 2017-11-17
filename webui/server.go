@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
+	"mime"
 	"net"
 	"net/http"
 	"strconv"
@@ -12,6 +14,7 @@ import (
 	"time"
 
 	"github.com/hironobu-s/conoha-iso/command"
+	assets "github.com/jessevdk/go-assets"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"gopkg.in/go-playground/validator.v8"
@@ -36,7 +39,8 @@ func RunServer(address string, ident *command.Identity) (err error) {
 	e.Use(identHandler)
 
 	// Assets
-	e.Static("/static", "assets")
+	//e.Static("/static", "assets")
+	e.GET("/static/*", static)
 
 	// Routing
 	e.GET("/", index)
@@ -63,6 +67,17 @@ func RunServer(address string, ident *command.Identity) (err error) {
 	return nil
 }
 
+func static(c echo.Context) error {
+	filename := strings.Replace(c.Request().URL.Path, "static/", "", -1)
+	f, err := Assets.Open("assets" + filename)
+	if err != nil {
+		return echo.ErrNotFound
+	}
+
+	types := strings.Split(filename, ".")
+	return c.Stream(200, mime.TypeByExtension(types[1]), f)
+}
+
 // -----------------------------------------------------------------
 
 type Template struct {
@@ -71,19 +86,48 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	var err error
-	t.templates, err = template.ParseGlob("webui/template/*")
+
+	var layoutFile, contentsFile *assets.File
+
+	for _, f := range Assets.Files {
+		fileName := f.Name()
+		if f.IsDir() || strings.Index(f.Path, "template") < 0 {
+			continue
+		} else if fileName == name+".html" {
+			contentsFile = f
+		} else if fileName == "layout.html" {
+			layoutFile = f
+		}
+	}
+
+	// Execute contents template
+	contentsBuf, err := ioutil.ReadAll(contentsFile)
 	if err != nil {
 		return err
 	}
 
-	// Execute contents template
+	contentsTemplate, err := template.New(name).Parse(string(contentsBuf))
+	if err != nil {
+		return err
+	}
+
 	buf := bytes.NewBufferString("")
-	if err = t.templates.ExecuteTemplate(buf, name, data); err != nil {
+	if err = contentsTemplate.ExecuteTemplate(buf, name, data); err != nil {
 		return err
 	}
 
 	// Execute layout template with contents.
-	return t.templates.ExecuteTemplate(w, "layout", map[string]template.HTML{
+	layoutBuf, err := ioutil.ReadAll(layoutFile)
+	if err != nil {
+		return err
+	}
+
+	layoutTemplate, err := template.New("layout").Parse(string(layoutBuf))
+	if err != nil {
+		return err
+	}
+
+	return layoutTemplate.ExecuteTemplate(w, "layout", map[string]template.HTML{
 		"Body": template.HTML(buf.String()),
 	})
 }
