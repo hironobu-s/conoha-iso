@@ -1,3 +1,4 @@
 vendor
 *.lock
 bin
+webui/assets.go
