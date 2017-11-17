@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/hironobu-s/conoha-iso/command"
 	"github.com/hironobu-s/conoha-iso/webui"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
