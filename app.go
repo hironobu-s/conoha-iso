@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	APP_VERSION            = "0.4.2"
+	APP_VERSION            = "0.4.3"
 	DEFAULT_LISTEN_ADDRESS = "127.0.0.1:6543"
 )
 
