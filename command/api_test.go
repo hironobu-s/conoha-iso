@@ -16,7 +16,7 @@ func (a *Api) Request() *http.Request {
 func TestRegionSet(t *testing.T) {
 	var err error
 
-	for _, s := range []string{TYO1, SIN1, SJC1} {
+	for _, s := range []string{TYO1, TYO2, SIN1, SJC1} {
 		region := &Region{}
 		if err = region.Set(s); err != nil {
 			t.Errorf("Test shoud pass in this case. region=%s", s)
@@ -51,7 +51,7 @@ func TestServiceSet(t *testing.T) {
 
 func TestApiNew(t *testing.T) {
 	for _, s := range []string{IDENTITY, COMPUTE} {
-		for _, r := range []string{TYO1, SIN1, SJC1} {
+		for _, r := range []string{TYO1, TYO2, SIN1, SJC1} {
 			api, err := NewApi(s, r)
 			if api == nil || err != nil {
 				t.Errorf("Test shoud be pass in this case. service=%s region=%s", r, s)
@@ -72,7 +72,7 @@ func TestApiNew(t *testing.T) {
 func TestApiEndpoint(t *testing.T) {
 	var url *url.URL
 
-	for _, r := range []string{TYO1, SIN1, SJC1} {
+	for _, r := range []string{TYO1, TYO2, SIN1, SJC1} {
 		api, _ := NewApi("identity", r)
 		url, _ = api.Endpoint([]string{"tokens"})
 		expect := fmt.Sprintf("https://identity.%s.conoha.io/v2.0/tokens", r)
@@ -81,7 +81,7 @@ func TestApiEndpoint(t *testing.T) {
 		}
 	}
 
-	for _, r := range []string{TYO1, SIN1, SJC1} {
+	for _, r := range []string{TYO1, TYO2, SIN1, SJC1} {
 		api, _ := NewApi("compute", r)
 		url, _ = api.Endpoint([]string{"iso-images"})
 		expect := fmt.Sprintf("https://compute.%s.conoha.io/v2/iso-images", r)

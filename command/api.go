@@ -12,6 +12,7 @@ import (
 // Regions
 const (
 	TYO1 = "tyo1"
+	TYO2 = "tyo2"
 	SIN1 = "sin1"
 	SJC1 = "sjc1"
 )
@@ -23,6 +24,8 @@ type Region struct {
 func (r *Region) Set(region string) error {
 	switch region {
 	case TYO1:
+		fallthrough
+	case TYO2:
 		fallthrough
 	case SIN1:
 		fallthrough
