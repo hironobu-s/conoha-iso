@@ -31,6 +31,19 @@ You can also run conoha-iso in Docker. Using [docker-conoha-iso.sh](https://gith
 
 (See https://hub.docker.com/r/hironobu/conoha-iso/)
 
+## How to build
+
+You can build conoha-iso for your platform by yourself.
+
+```bash
+go get -u github.com/golang/dep/cmd/dep
+dep ensure
+make
+```
+
+You will get executables and archives in bin directory.
+
+
 ## Introduction
 
 You need to provide some authentication informations, which are API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel. The region should be "tyo1", "tyo2", "sin1", or "sjc1".

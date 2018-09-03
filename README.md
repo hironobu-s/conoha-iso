@@ -33,6 +33,20 @@ Dockerイメージを用意してあります。環境変数などを渡す必�
 
 [hironobu/conoha-iso](https://hub.docker.com/r/hironobu/conoha-iso/)
 
+## 自分でビルドする
+
+上述したように配布された実行ファイルを使用することもできますが、
+以下のように自分でビルドすることもできます。
+
+```bash
+go get -u github.com/golang/dep/cmd/dep
+dep ensure
+make
+```
+
+binディレクトリ以下に実行ファイルと配布アーカイブファイルが生成されます。
+
+
 ## はじめに(認証情報とリージョンの指定)
 
 conoha-isoを実行するには、APIへの認証情報とリージョンの指定が必須となります。
