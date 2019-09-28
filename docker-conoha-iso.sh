@@ -12,4 +12,4 @@ docker run \
        -e OS_USERNAME=$OS_USERNAME \
        -e OS_REGION_NAME=$OS_REGION_NAME \
        hironobu/conoha-iso \
-       /bin/conoha-iso [options]
+       /bin/conoha-iso $ARGS
