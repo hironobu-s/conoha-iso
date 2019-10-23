@@ -36,8 +36,6 @@ You can also run conoha-iso in Docker. Using [docker-conoha-iso.sh](https://gith
 You can build conoha-iso for your platform by yourself.
 
 ```bash
-go get -u github.com/golang/dep/cmd/dep
-dep ensure
 make
 ```
 
