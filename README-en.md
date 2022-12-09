@@ -44,7 +44,9 @@ You will get executables and archives in bin directory.
 
 ## Introduction
 
-You need to provide some authentication informations, which are API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel. The region should be "tyo1", "tyo2", "sin1", or "sjc1".
+You need to provide some authentication informations, which are API-Username, API-Password, Tenant-ID and Region to run conoha-iso. These are on the ConoHa control-panel. The region should be "tyo1", "tyo2".
+
+*ConoHa has "tyo3" region, which does NOT support ISO image management APIs. conoha-iso would not work on it.*
 
 **Via command-line arguments**
 
